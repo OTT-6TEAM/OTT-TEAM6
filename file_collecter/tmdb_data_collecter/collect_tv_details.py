@@ -3,8 +3,8 @@ from file_collecter.tmdb_data_collecter.set_up import *
 def list_to_str(lst, key="name"):
     return ", ".join([str(item.get(key, "")) for item in lst]) if lst else ""
 
-def fetch_movie_details(movie_id):
-    url = f"https://api.themoviedb.org/3/movie/{movie_id}"
+def fetch_tv_details(tv_id):
+    url = f"https://api.themoviedb.org/3/tv/{tv_id}"
     # providers 정보 추가를 위해 append_to_response에 watch/providers를 추가합니다.
     # WATCH_PROVIDERS_REGION은 'KR' 또는 'US' 등 원하는 국가 코드를 사용합니다. (예: KR)
     params = {
@@ -19,7 +19,7 @@ def fetch_movie_details(movie_id):
         data = response.json()
 
     except Exception as e:
-        print(f"Error fetching details for {movie_id}: {e}")
+        print(f"Error fetching details for {tv_id}: {e}")
         return None
 
     genres_data = data.get("genres", [])

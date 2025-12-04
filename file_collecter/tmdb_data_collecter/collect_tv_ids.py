@@ -25,7 +25,7 @@ def generate_date_periods(start_date, end_date, months=1):
 
 def fetch_single_page(page, start_date, end_date):
     """단일 페이지를 가져오는 함수"""
-    base_url = "https://api.themoviedb.org/3/discover/movie"
+    base_url = "https://api.themoviedb.org/3/discover/tv"
     params = {
         "api_key": API_KEY,
         "language": "en-US",
@@ -46,7 +46,7 @@ def fetch_single_page(page, start_date, end_date):
         print(f"페이지 {page}에서 오류: {e}")
         return [], 1, 0
 
-def fetch_movies_id_between_dates(start_date, end_date):
+def fetch_tv_id_between_dates(start_date, end_date):
     """
     TMDB Discover API를 사용하여 특정 기간 내 모든 영화 목록을 수집 (멀티스레드).
     - 수집 효율성을 위해 병렬 처리(멀티스레드)를 사용합니다.
@@ -88,11 +88,11 @@ def fetch_movies_id_between_dates(start_date, end_date):
     # 4. 최종적으로 수집된 모든 영화 목록 반환
     return all_ids_set
 
-def collect_movie_ids(start_date, end_date):
+def collect_tv_ids(start_date, end_date):
     periods = generate_date_periods(start_date, end_date)
     all_ids = set()
     for period in periods:
-        all_ids.update(fetch_movies_id_between_dates(period[0], period[1]))
+        all_ids.update(fetch_tv_id_between_dates(period[0], period[1]))
 
     print(f"전체 ID 개수: {len(all_ids)}")
 
