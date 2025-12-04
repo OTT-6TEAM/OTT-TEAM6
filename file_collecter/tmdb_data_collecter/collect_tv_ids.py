@@ -30,8 +30,8 @@ def fetch_single_page(page, start_date, end_date):
         "api_key": API_KEY,
         "language": "en-US",
         "sort_by": "popularity.desc",
-        "primary_release_date.gte": start_date,
-        "primary_release_date.lte": end_date,
+        "first_air_date.gte": start_date,
+        "first_air_date.lte": end_date,
         "page": page,
         "include_adult": True,
     }

@@ -10,7 +10,7 @@ def fetch_tv_details(tv_id):
     params = {
         "api_key": API_KEY,
         "language": "en-US",
-        "append_to_response": "credits,watch/providers,keywords",
+        "append_to_response": "credits,watch/providers,keywords,external_ids",
     }
 
     try:
@@ -21,6 +21,9 @@ def fetch_tv_details(tv_id):
     except Exception as e:
         print(f"Error fetching details for {tv_id}: {e}")
         return None
+
+    imdb_id_data = data.get("external_ids", {})
+    imdb_id = imdb_id_data.get("imdb_id")
 
     genres_data = data.get("genres", [])
     genre_ids = list_to_str(genres_data, key="id")
@@ -77,7 +80,7 @@ def fetch_tv_details(tv_id):
         # ID
         "id": data.get("id"),
         "type": "tv_series",
-        "imdb_id": data.get("imdb_id"),
+        "imdb_id": imdb_id,
         # 포스터
         "poster_path": data.get("poster_path"),
         # 제목
