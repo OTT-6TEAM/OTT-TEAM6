@@ -1,3 +1,5 @@
 *.csv
 .env
 files
+files_test.ipynb
+.idea
