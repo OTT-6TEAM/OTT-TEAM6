@@ -1,4 +1,4 @@
-from file_collecter.tmdb_data_collecter.set_up import *
+from .set_up import *
 
 def list_to_str(lst, key="name"):
     return ", ".join([str(item.get(key, "")) for item in lst]) if lst else ""

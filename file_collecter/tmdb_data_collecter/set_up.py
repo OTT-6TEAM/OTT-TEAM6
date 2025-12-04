@@ -3,6 +3,7 @@ from urllib3.util.retry import Retry
 import requests
 from dotenv import load_dotenv
 import os
+import json
 from tqdm import tqdm
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -32,3 +33,6 @@ def create_session():
 load_dotenv()
 API_KEY = os.getenv("TMDB_API_KEY")
 session = create_session()
+
+def list_to_str(lst, key="name"):
+    return ", ".join([str(item.get(key, "")) for item in lst]) if lst else ""
