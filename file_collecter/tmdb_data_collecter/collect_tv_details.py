@@ -186,12 +186,12 @@ def fetch_tv_series_details(tv_id):
         "review": review_text,
 
         # 키워드
-        "keyword": ", ".join(keywords_list[:20]),
+        "keyword": ", ".join(keywords_list),
 
         # 크레딧
         "top_cast": ", ".join(top_cast),
-        "directors": ", ".join(sorted(directors)[:10]),
-        "writers": ", ".join(sorted(writers)[:10]),
+        "directors": ", ".join(sorted(directors)),
+        "writers": ", ".join(sorted(writers)),
 
         # Providers (JSON 문자열)
         "providers_flatrate": json.dumps(providers_flatrate, ensure_ascii=False) if providers_flatrate else "{}",
@@ -246,7 +246,7 @@ def fetch_tv_season_details(tv_id, season_number, series_name="", network_names=
         "air_date": data.get("air_date"),
         "overview": data.get("overview"),
         "vote_average": data.get("vote_average"),
-        "vote_count": data.get("vote_count"),  # ✅ 추가
+        "vote_count": data.get("vote_count"),
         "network_names": network_names,
         "network_ids": network_ids,
         "total_episodes": total_episodes,

@@ -2,5 +2,7 @@
 .env
 files
 files_test.ipynb
+files_test_2.ipynb
+test_prepro.ipynb
 .idea
 !tv series_seasons_2016_2025.ipynb
