@@ -31,22 +31,6 @@ def fetch_movie_details(movie_id):
     else:
         keywords_list = []
 
-    credits = data.get("credits", {})
-    cast_list = credits.get("cast", []) if isinstance(credits, dict) else []
-    crew_list = credits.get("crew", []) if isinstance(credits, dict) else []
-
-    # 상위 배우 5명 (원래 코드 주석은 3명이었으나 코드는 5명이므로 5명으로 유지)
-    top_cast = [c.get("name") for c in cast_list[:5]]
-
-    # 감독
-    directors = [c.get("name") for c in crew_list if c.get("job") == "Director"]
-
-    # 작가 (Writer, Screenplay)
-    writers = [
-        c.get("name") for c in crew_list
-        if c.get("department") == "Writing" or c.get("job") in ("Writer", "Screenplay")
-    ]
-
     providers_data = data.get("watch/providers", {})
     providers_results = providers_data.get("results", {}) if isinstance(providers_data, dict) else {}
 
@@ -107,10 +91,7 @@ def fetch_movie_details(movie_id):
         "genre_ids": genre_ids,
         ## 키워드
         "keywords": ", ".join(keywords_list),
-        # 제작 참여자
-        "top_cast": ", ".join(top_cast),
-        "directors": ", ".join(directors),
-        "writers": ", ".join(writers),
+
         # 제작사 및 국가
         "production_companies": list_to_str(data.get("production_companies", [])),
         "production_countries": list_to_str(data.get("production_countries", [])),
