@@ -39,22 +39,44 @@ class OverViewVectorizer():
     ## 불용어 불러오기
     def _get_base_stopwords(self):
         base_stopwords = set(ENGLISH_STOP_WORDS)
-        movie_stopwords = {
-            # 너무 일반적
-            "set","new","help","team","one","two","three","also","may","like","makes","find",
-            "based","story","series","show","episode","season","drama",
+        costom_stopwords = {
+            # 지명, 인명, 기관 (데이터에서 튀는 특정 단어들)
+            "york", "america", "england", "mexico", "colombia", "john", "jimmy", "city",
+            "televisa", "remake", "manchester", "orleans", "isle", "san", "santa", "saint",
 
-            # 서사에서 의미 약한 메타 단어
-            "life","family","world","time","day","years","year","man","woman","girl","boy",
+            # 제작/형식 관련 (줄거리 외적인 단어)
+            "produced", "production", "television", "tv", "series", "show", "episode", "season",
+            "drama", "documentary", "feature", "theatrical", "cinematic", "adaptation", "sequel",
+            "trilogy", "installment", "cast", "footage", "debut", "screen", "archive", "filmmaker",
 
-            # 제작/설명 계열
-            "produced","production","television","tv",
+            # 숫자 및 의미 없는 토큰
+            "one", "two", "three", "iii", "ii", "iv", "vi", "vii", "viii", "ix", "la", "las", "los",
+            "del", "jr", "st", "dr", "mr", "mrs",
 
-            # 자주 튀는 짧은 토큰/로마숫자
-            "iii","ii","iv","vi","vii","viii","ix","la",
+            # 동작/상태 (너무 흔해서 변별력 없음)
+            'find', 'make', 'take', 'get', 'go', 'come', 'set', 'help', 'know', 'see', 'want',
+            'begin', 'start', 'happen', 'appear', 'stay', 'seem', 'put', 'keep', 'let', 'become',
+            'try', 'look', 'happen', 'proceed', 'continue',
+
+            # 시간/단위/장소 (배경 정보일 뿐 서사 특징이 아닌 것)
+            'life', 'world', 'time', 'day', 'year', 'night', 'way', 'place', 'home', 'thing',
+            'people', 'person', 'group', 'name', 'end', 'area', 'event', 'incident', 'situation',
+            'period', 'aspect', 'matter', 'condition', 'month', 'week', 'hour', 'minute',
+            'today', 'tonight', 'tomorrow', 'yesterday', 'morning', 'afternoon', 'evening',
+
+            # 일반 형용사 (긍정/부정의 서사적 의미가 약한 것들)
+            'young', 'old', 'new', 'good', 'bad', 'great', 'small', 'large', 'big', 'little',
+            'long', 'high', 'various', 'different', 'several', 'numerous', 'entire', 'whole',
+            'normal', 'ordinary', 'typical', 'regular', 'simple', 'basic',
+
+            # 강조 부사 (TF-IDF에서 큰 비중을 차지하지만 정보량은 적음)
+            'clearly', 'obviously', 'certainly', 'definitely', 'completely', 'totally', 'entirely',
+            'extremely', 'highly', 'quite', 'rather', 'fairly', 'pretty', 'somewhat', 'almost',
+            'mostly', 'mainly', 'actually', 'really', 'truly', 'simply', 'merely', 'basically',
+            'essentially', 'naturally', 'especially', 'particularly'
         }
 
-        return base_stopwords.union(movie_stopwords)
+        return base_stopwords.union(costom_stopwords)
     ## 오버뷰 정제
     def _clean_overview(self, text):
         """줄거리 텍스트 정제"""
