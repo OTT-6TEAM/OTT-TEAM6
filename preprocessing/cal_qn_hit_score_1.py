@@ -9,9 +9,6 @@ def scaler(data, column, min_val, max_val):
 def num_votes_scaler(data, min_val = 1, max_val = 17):
     return scaler(data, 'num_votes', min_val, max_val)
 
-def popularity_scaler(data, min_val = -6, max_val = 8):
-    return scaler(data, 'popularity', min_val, max_val)
-
 def adjust_rating_scaler(data, min_val = 1, max_val = 10):
     column = 'adjust_rating'
     data[f"{column}_scaled"] = (
@@ -20,9 +17,8 @@ def adjust_rating_scaler(data, min_val = 1, max_val = 10):
     return data
 
 def cal_qn_hit_score(data, min_ratio = 0.2):
-    W_VOTES = 0.6380939603619843
-    W_POP = 0.1
-    W_RATING = 0.26190603963801573
+    W_VOTES = 0.74
+    W_RATING = 0.26
 
     # 가중 평균으로 두 데이터를 통합
     data = data.assign(
@@ -46,13 +42,10 @@ def cal_qn_hit_score(data, min_ratio = 0.2):
     data = data.assign(adjust_rating=data['weighted_rating'] * alpha + data['rating'] * (1 - alpha))
 
     data = num_votes_scaler(data)
-    data = popularity_scaler(data)
     data = adjust_rating_scaler(data)
 
     qn_hit_score = (
         (data["num_votes_scaled"] * W_VOTES) +
-        (data["popularity_scaled"] * W_POP) +
         (data["adjust_rating_scaled"] * W_RATING)
     )
-
     return qn_hit_score
