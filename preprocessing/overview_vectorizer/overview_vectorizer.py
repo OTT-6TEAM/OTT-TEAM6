@@ -3,7 +3,7 @@ from .set_up import *
 class OverViewVectorizer():
     def __init__(
             self,
-            max_features=50000,
+            max_features=5000,
             ngram_range=(1, 2),
             min_df=3,
             max_df=0.8,
@@ -43,11 +43,20 @@ class OverViewVectorizer():
             # 지명, 인명, 기관 (데이터에서 튀는 특정 단어들)
             "york", "america", "england", "mexico", "colombia", "john", "jimmy", "city",
             "televisa", "remake", "manchester", "orleans", "isle", "san", "santa", "saint",
+            'india', 'indian', 'british', 'london',
+            
+            # 너무 일반적인 명사
+            'man',
 
             # 제작/형식 관련 (줄거리 외적인 단어)
             "produced", "production", "television", "tv", "series", "show", "episode", "season",
             "drama", "documentary", "feature", "theatrical", "cinematic", "adaptation", "sequel",
             "trilogy", "installment", "cast", "footage", "debut", "screen", "archive", "filmmaker",
+            'story',
+
+            'aka', 'anthology', 'biopic', 'chapter', 'character', 'cinema', 'director',
+            'document', 'film', 'movie', 'narrate', 'narrative', 'original', 'plot', 'portray',
+            'producer', 'protagonist', 'retelling', 'scene', 'script'
 
             # 숫자 및 의미 없는 토큰
             "one", "two", "three", "iii", "ii", "iv", "vi", "vii", "viii", "ix", "la", "las", "los",
@@ -56,7 +65,13 @@ class OverViewVectorizer():
             # 동작/상태 (너무 흔해서 변별력 없음)
             'find', 'make', 'take', 'get', 'go', 'come', 'set', 'help', 'know', 'see', 'want',
             'begin', 'start', 'happen', 'appear', 'stay', 'seem', 'put', 'keep', 'let', 'become',
-            'try', 'look', 'happen', 'proceed', 'continue',
+            'try', 'look', 'happen', 'proceed', 'continue', 'soon',
+
+            'ability', 'able', 'accept', 'acceptance', 'accord', 'actual', 'add', 'adjust', 'admit',
+            'allow', 'apparent', 'apparently', 'appearance', 'apply', 'approach', 'arise', 'assume',
+            'attend', 'available', 'away', 'background', 'basis', 'become', 'begin',
+            'beginning', 'behave', 'behavior', 'belong', 'bring', 'cause', 'change', 'choose', 'come',
+            'complete', 'consider', 'consist', 'contain',
 
             # 시간/단위/장소 (배경 정보일 뿐 서사 특징이 아닌 것)
             'life', 'world', 'time', 'day', 'year', 'night', 'way', 'place', 'home', 'thing',
