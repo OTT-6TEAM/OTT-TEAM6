@@ -1,0 +1,11 @@
+# IMDB 비동기 스크래핑 필수 라이브러리
+pandas>=2.0.0
+aiohttp>=3.9.0
+beautifulsoup4>=4.11.0
+tqdm>=4.65.0
+lxml>=4.9.0
+
+# 선택적 (데이터 분석)
+numpy>=1.24.0
+matplotlib>=3.7.0
+openpyxl>=3.1.0  # Excel 지원
