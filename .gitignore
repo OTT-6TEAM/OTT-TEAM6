@@ -1,5 +1,27 @@
 *.csv
+*.tsv
+*.json
+*.xml
+*.parquet
+*.xlsx
+*.h5
+*.pkl
+*.joblib
+*.model
+# Python 캐시 파일
+__pycache__/
+*.pyc
+*.pyo
+
+# 가상환경
+venv/
 .env
-files
-test_*.ipynb
-.idea
+
+# 데이터 파일 (원하지 않으면 제외)
+*.csv
+*.xlsx
+*.parquet
+*.model
+
+# 로그 및 임시 파일
+*.log
