@@ -13,6 +13,10 @@ __pycache__/
 *.pyc
 *.pyo
 
+# 테스트 파일 및 파일 저장소
+test_*.ipynb
+files/
+
 # 가상환경
 venv/
 .env
