@@ -1,7 +1,7 @@
 """
 영화 흥행/비흥행 BERTopic 분석
 - 사전 계산된 임베딩(Qwen/Qwen3-Embedding-0.6B) 활용
-- hit_score 기준 상위 20% = 흥행, 하위 20% = 비흥행
+- hit_score 기준 상위 20% = 흥행, 하위 50% = 비흥행
 - 모든 출력물은 '영화데이터BERTOPIC' 폴더에 저장
 - c-TF-IDF는 줄거리(overview)만 사용하여 장르 prefix 문제 해결
 """
@@ -20,7 +20,7 @@ warnings.filterwarnings('ignore')
 # ==========================================================
 # 0. 출력 폴더 생성
 # ==========================================================
-OUTPUT_DIR = "영화데이터BERTOPIC"
+OUTPUT_DIR = "files/영화데이터BERTOPIC"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 print(f"출력 폴더 생성: {OUTPUT_DIR}/")
 
@@ -70,8 +70,8 @@ print("데이터 로드 중...")
 print("="*60)
 
 # 데이터 로드
-movie_df = pd.read_parquet(r"최종데이터셋_영화\movie_text_embedding_qwen3.parquet")
-hit_score_df = pd.read_parquet("09_hit_score.parquet")
+movie_df = pd.read_parquet(r"files/embedding/movie_text_embedding_qwen3.parquet")
+hit_score_df = pd.read_parquet("files/final_files/00_hit_score.parquet")
 
 print(f"영화 데이터: {len(movie_df)}개")
 print(f"Hit Score 데이터: {len(hit_score_df)}개")
@@ -85,7 +85,7 @@ df_with_score = df_merged[df_merged['hit_score'].notna()].copy()
 print(f"hit_score가 있는 데이터: {len(df_with_score)}개")
 
 # ==========================================================
-# 3. 흥행/비흥행 분류 (상위 20%, 하위 20%)
+# 3. 흥행/비흥행 분류 (상위 20%, 하위 50%)
 # ==========================================================
 print("\n" + "="*60)
 print("흥행/비흥행 분류 중...")
@@ -93,10 +93,10 @@ print("="*60)
 
 # 퍼센타일 계산
 hit_threshold = df_with_score['hit_score'].quantile(0.80)  # 상위 20% 경계
-flop_threshold = df_with_score['hit_score'].quantile(0.20)  # 하위 20% 경계
+flop_threshold = df_with_score['hit_score'].quantile(0.50)  # 하위 20% 경계
 
 print(f"상위 20% 경계 (hit_score >= {hit_threshold:.4f}): 흥행")
-print(f"하위 20% 경계 (hit_score <= {flop_threshold:.4f}): 비흥행")
+print(f"하위 50% 경계 (hit_score <= {flop_threshold:.4f}): 비흥행")
 
 # 분류
 df_hit = df_with_score[df_with_score['hit_score'] >= hit_threshold].copy()
@@ -196,6 +196,28 @@ topics_hit, probs_hit = hit_topic_model.fit_transform(
     embeddings=embeddings_hit  # ← 임베딩은 기존 것 사용 (장르+줄거리)
 )
 
+# documents 에는 텍스트를, embeddings 에는 벡터를 넣습니다.
+new_topics_hit = hit_topic_model.reduce_outliers(
+    documents=texts_hit_for_ctfidf,           # 첫 번째 인자: 반드시 텍스트 리스트
+    topics=topics_hit,            # 두 번째 인자: 기존 토픽 결과
+    strategy="embeddings",          # 전략 선택
+    embeddings=embeddings_hit,    # 임베딩 벡터 직접 전달 (속도 향상)
+    threshold=0.6                   # 유사도 문턱값
+)
+
+# 3. 결과 반영 (필수)
+hit_topic_model.update_topics(
+    texts_hit_for_ctfidf,
+    topics=new_topics_hit,
+    vectorizer_model = CountVectorizer(
+        stop_words=english_stopwords_movie,
+        ngram_range=(1, 2),
+        min_df=1,
+        max_df=0.95
+    )
+)
+
+
 # 결과 출력
 hit_topic_info = hit_topic_model.get_topic_info()
 print(f"\n[흥행작 토픽 개요] - 총 {len(hit_topic_info) - 1}개 토픽 (Topic -1 제외)")
@@ -237,6 +259,27 @@ topics_flop, probs_flop = flop_topic_model.fit_transform(
     embeddings=embeddings_flop  # ← 임베딩은 기존 것 사용 (장르+줄거리)
 )
 
+# documents 에는 텍스트를, embeddings 에는 벡터를 넣습니다.
+new_topics_flop = flop_topic_model.reduce_outliers(
+    documents=texts_flop_for_ctfidf,           # 첫 번째 인자: 반드시 텍스트 리스트
+    topics=topics_flop,            # 두 번째 인자: 기존 토픽 결과
+    strategy="embeddings",          # 전략 선택
+    embeddings=embeddings_flop,    # 임베딩 벡터 직접 전달 (속도 향상)
+    threshold=0.6                   # 유사도 문턱값
+)
+
+# 3. 결과 반영 (필수)
+flop_topic_model.update_topics(
+    texts_flop_for_ctfidf,
+    topics=new_topics_flop,
+    vectorizer_model = CountVectorizer(
+        stop_words=english_stopwords_movie,
+        ngram_range=(1, 2),
+        min_df=1,
+        max_df=0.95
+    )
+)
+
 # 결과 출력
 flop_topic_info = flop_topic_model.get_topic_info()
 print(f"\n[비흥행작 토픽 개요] - 총 {len(flop_topic_info) - 1}개 토픽 (Topic -1 제외)")
@@ -260,12 +303,12 @@ print("="*60)
 print(f"\n[흥행작]")
 print(f"  - 총 영화 수: {len(df_hit)}")
 print(f"  - 발견된 토픽 수: {len(hit_topic_info) - 1}")
-print(f"  - 노이즈(Topic -1) 문서 수: {sum(1 for t in topics_hit if t == -1)}")
+print(f"  - 노이즈(Topic -1) 문서 수: {sum(1 for t in new_topics_hit if t == -1)}")
 
 print(f"\n[비흥행작]")
 print(f"  - 총 영화 수: {len(df_flop)}")
 print(f"  - 발견된 토픽 수: {len(flop_topic_info) - 1}")
-print(f"  - 노이즈(Topic -1) 문서 수: {sum(1 for t in topics_flop if t == -1)}")
+print(f"  - 노이즈(Topic -1) 문서 수: {sum(1 for t in new_topics_flop if t == -1)}")
 
 # ==========================================================
 # 9. 시각화 저장
@@ -479,7 +522,7 @@ print("="*60)
 
 # 1) 영화별 토픽 할당 결과
 df_hit_result = df_hit[['imdb_id', 'title', 'combined_text', 'hit_score']].copy()
-df_hit_result['topic'] = topics_hit
+df_hit_result['topic'] = new_topics_hit
 
 # probs 형태에 따라 처리 (에러 방지)
 if isinstance(probs_hit, np.ndarray) and probs_hit.ndim == 1:
@@ -516,7 +559,7 @@ print(f"  ✓ {OUTPUT_DIR}/hit_topic_keywords.csv")
 
 # 1) 영화별 토픽 할당 결과
 df_flop_result = df_flop[['imdb_id', 'title', 'combined_text', 'hit_score']].copy()
-df_flop_result['topic'] = topics_flop
+df_flop_result['topic'] = new_topics_flop
 
 # probs 형태에 따라 처리 (에러 방지)
 if isinstance(probs_flop, np.ndarray) and probs_flop.ndim == 1:
@@ -594,7 +637,7 @@ report = f"""
 ■ 분석 개요
   - 분석 대상: hit_score가 있는 영화 {len(df_with_score)}개
   - 흥행 기준: hit_score 상위 20% (>= {hit_threshold:.4f})
-  - 비흥행 기준: hit_score 하위 20% (<= {flop_threshold:.4f})
+  - 비흥행 기준: hit_score 하위 50% (<= {flop_threshold:.4f})
   - 임베딩: 장르+줄거리 (Qwen/Qwen3-Embedding-0.6B)
   - c-TF-IDF: 줄거리(overview)만 사용 (장르 prefix 문제 해결)
 
@@ -603,7 +646,7 @@ report = f"""
 ================================================================================
   - 분석 대상 수: {len(df_hit)}개
   - 발견된 토픽 수: {len(hit_topic_info) - 1}개
-  - 노이즈(미분류) 문서 수: {sum(1 for t in topics_hit if t == -1)}개
+  - 노이즈(미분류) 문서 수: {sum(1 for t in new_topics_hit if t == -1)}개
   - 클러스터링 파라미터:
     · UMAP n_neighbors: {hit_n_neighbors}
     · HDBSCAN min_cluster_size: {hit_min_cluster}
@@ -623,7 +666,7 @@ report += f"""
 ================================================================================
   - 분석 대상 수: {len(df_flop)}개
   - 발견된 토픽 수: {len(flop_topic_info) - 1}개
-  - 노이즈(미분류) 문서 수: {sum(1 for t in topics_flop if t == -1)}개
+  - 노이즈(미분류) 문서 수: {sum(1 for t in new_topics_flop if t == -1)}개
   - 클러스터링 파라미터:
     · UMAP n_neighbors: {flop_n_neighbors}
     · HDBSCAN min_cluster_size: {flop_min_cluster}
