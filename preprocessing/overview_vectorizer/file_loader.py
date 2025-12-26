@@ -38,6 +38,6 @@ def load_files(main_file_path, hit_file_path= HIT_FILE_PATH, threshold= 150):
     df['hit_label'] = 0
     df.loc[df['hit_score'] >= np.quantile(df['hit_score'], 0.8), 'hit_label'] = 1
     df['nonhit_label'] = 0
-    df.loc[df['hit_score'] <= np.quantile(df['hit_score'], 0.5), 'nonhit_label'] = 1
+    df.loc[df['hit_score'] <= np.quantile(df['hit_score'], 0.4), 'nonhit_label'] = 1
 
     return df.loc[(df["len_overview"] >= threshold) & (df["hit_score"].notna())].reset_index(drop=True)

@@ -1,7 +1,7 @@
 """
 드라마 흥행/비흥행 BERTopic 분석
 - 사전 계산된 임베딩(Qwen/Qwen3-Embedding-0.6B) 활용
-- hit_score 기준 상위 20% = 흥행, 하위 50% = 비흥행
+- hit_score 기준 상위 20% = 흥행, 하위 40% = 비흥행
 - 모든 출력물은 '드라마데이터BERTOPIC' 폴더에 저장
 """
 
@@ -99,7 +99,7 @@ print("데이터 로드 중...")
 print("="*60)
 
 # 데이터 로드 (경로는 실제 환경에 맞게 수정 필요)
-drama_df = pd.read_parquet(r"files/embedding/drama_text_embedding_qwen3.parquet")
+drama_df = pd.read_parquet(r"files/final_files/drama/drama_text_embedding_qwen3.parquet")
 hit_score_df = pd.read_parquet("files/final_files/00_hit_score.parquet")
 
 print(f"드라마 데이터: {len(drama_df)}개")
@@ -122,10 +122,10 @@ print("="*60)
 
 # 퍼센타일 계산
 hit_threshold = df_with_score['hit_score'].quantile(0.80)  # 상위 20% 경계
-flop_threshold = df_with_score['hit_score'].quantile(0.50)  # 하위 20% 경계
+flop_threshold = df_with_score['hit_score'].quantile(0.40)  # 하위 20% 경계
 
 print(f"상위 20% 경계 (hit_score >= {hit_threshold:.4f}): 흥행")
-print(f"하위 50% 경계 (hit_score <= {flop_threshold:.4f}): 비흥행")
+print(f"하위 40% 경계 (hit_score <= {flop_threshold:.4f}): 비흥행")
 
 # 분류
 df_hit = df_with_score[df_with_score['hit_score'] >= hit_threshold].copy()
@@ -671,7 +671,7 @@ report = f"""
 ■ 분석 개요
   - 분석 대상: hit_score가 있는 드라마 {len(df_with_score)}개
   - 흥행 기준: hit_score 상위 20% (>= {hit_threshold:.4f})
-  - 비흥행 기준: hit_score 하위 50% (<= {flop_threshold:.4f})
+  - 비흥행 기준: hit_score 하위 40% (<= {flop_threshold:.4f})
   - 임베딩 모델: Qwen/Qwen3-Embedding-0.6B
 
 ================================================================================

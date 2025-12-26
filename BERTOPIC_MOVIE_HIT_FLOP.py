@@ -1,7 +1,7 @@
 """
 영화 흥행/비흥행 BERTopic 분석
 - 사전 계산된 임베딩(Qwen/Qwen3-Embedding-0.6B) 활용
-- hit_score 기준 상위 20% = 흥행, 하위 50% = 비흥행
+- hit_score 기준 상위 20% = 흥행, 하위 40% = 비흥행
 - 모든 출력물은 '영화데이터BERTOPIC' 폴더에 저장
 - c-TF-IDF는 줄거리(overview)만 사용하여 장르 prefix 문제 해결
 """
@@ -70,7 +70,7 @@ print("데이터 로드 중...")
 print("="*60)
 
 # 데이터 로드
-movie_df = pd.read_parquet(r"files/embedding/movie_text_embedding_qwen3.parquet")
+movie_df = pd.read_parquet(r"files/final_files/movie/movie_text_embedding_qwen3.parquet")
 hit_score_df = pd.read_parquet("files/final_files/00_hit_score.parquet")
 
 print(f"영화 데이터: {len(movie_df)}개")
@@ -85,7 +85,7 @@ df_with_score = df_merged[df_merged['hit_score'].notna()].copy()
 print(f"hit_score가 있는 데이터: {len(df_with_score)}개")
 
 # ==========================================================
-# 3. 흥행/비흥행 분류 (상위 20%, 하위 50%)
+# 3. 흥행/비흥행 분류 (상위 20%, 하위 40%)
 # ==========================================================
 print("\n" + "="*60)
 print("흥행/비흥행 분류 중...")
@@ -93,10 +93,10 @@ print("="*60)
 
 # 퍼센타일 계산
 hit_threshold = df_with_score['hit_score'].quantile(0.80)  # 상위 20% 경계
-flop_threshold = df_with_score['hit_score'].quantile(0.50)  # 하위 20% 경계
+flop_threshold = df_with_score['hit_score'].quantile(0.40)  # 하위 20% 경계
 
 print(f"상위 20% 경계 (hit_score >= {hit_threshold:.4f}): 흥행")
-print(f"하위 50% 경계 (hit_score <= {flop_threshold:.4f}): 비흥행")
+print(f"하위 40% 경계 (hit_score <= {flop_threshold:.4f}): 비흥행")
 
 # 분류
 df_hit = df_with_score[df_with_score['hit_score'] >= hit_threshold].copy()
@@ -637,7 +637,7 @@ report = f"""
 ■ 분석 개요
   - 분석 대상: hit_score가 있는 영화 {len(df_with_score)}개
   - 흥행 기준: hit_score 상위 20% (>= {hit_threshold:.4f})
-  - 비흥행 기준: hit_score 하위 50% (<= {flop_threshold:.4f})
+  - 비흥행 기준: hit_score 하위 40% (<= {flop_threshold:.4f})
   - 임베딩: 장르+줄거리 (Qwen/Qwen3-Embedding-0.6B)
   - c-TF-IDF: 줄거리(overview)만 사용 (장르 prefix 문제 해결)
 
