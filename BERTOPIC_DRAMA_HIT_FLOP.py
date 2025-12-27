@@ -815,8 +815,8 @@ for item in sorted(os.listdir(OUTPUT_DIR)):
     else:
         size = os.path.getsize(item_path)
         if size > 1024*1024:
-            print(f"  📄 {item} ({size/1024/1024:.1f} MB)")
+            print(f"{item} ({size/1024/1024:.1f} MB)")
         elif size > 1024:
-            print(f"  📄 {item} ({size/1024:.1f} KB)")
+            print(f"{item} ({size/1024:.1f} KB)")
         else:
-            print(f"  📄 {item} ({size} bytes)")
+            print(f"{item} ({size} bytes)")

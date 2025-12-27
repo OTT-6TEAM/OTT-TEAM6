@@ -138,7 +138,7 @@ def collect_ids(start_date, end_date, media_type="movie", months=1):
         print(f"  누적 ID: {len(all_ids):,}개\n")
 
     print(f"{'=' * 60}")
-    print(f"✅ 최종 수집: {len(all_ids):,}개 {media_name} ID")
+    print(f"최종 수집: {len(all_ids):,}개 {media_name} ID")
     print(f"{'=' * 60}\n")
 
     return sorted(list(all_ids))

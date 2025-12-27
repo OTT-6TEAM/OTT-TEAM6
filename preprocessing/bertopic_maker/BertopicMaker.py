@@ -9,19 +9,15 @@ class BertopicMaker:
 
         # 데이터
         self.data = data
-        self.type_name = type_name
 
         # 중요한 정보
         self.embeddings = np.vstack(self.data['embedding'].values)
         self.texts_for_ctfidf = self.data['overview'].tolist()
 
-        # 데이터 경로 지정
-        load_dotenv()
-        self.output_dir = f"{os.getenv("OUTPUT_DIR")}/{type_name}"
-        os.makedirs(self.output_dir, exist_ok=True)
+        base_stopwords = list(ENGLISH_STOP_WORDS)
 
         # TF-IDF
-        if self.type_name == 'drama':
+        if type_name == 'drama':
             additional_drama_stopwords = [
             # ========== 드라마 포맷/메타 ==========
             'tv', 'television', 'show', 'series', 'episode', 'episodes',
@@ -83,7 +79,7 @@ class BertopicMaker:
         ]
             stopwords = list(set(base_stopwords + additional_drama_stopwords))
 
-        elif self.type_name == 'movie':
+        elif type_name == 'movie':
             additional_movie_stopwords = [
                 # ========== 영화 도메인 공통어 ==========
                 'film', 'films', 'movie', 'movies', 'story', 'stories',
@@ -113,6 +109,9 @@ class BertopicMaker:
             ]
             stopwords = list(set(base_stopwords + additional_movie_stopwords))
 
+        else:
+            stopwords = base_stopwords
+
         self.vectorizer_model = CountVectorizer(
             stop_words=stopwords,
             ngram_range=(1, 2),
@@ -125,15 +124,13 @@ class BertopicMaker:
         self.min_cluster = max(15, len(self.data) // 100)
         self.embedding_model = embedding_model
 
-
         # 모델
         self.bertopic_model = None
 
         # 분석 결과
         self.result_data = pd.DataFrame()
-        self.topic_info = pd.DataFrame()
 
-    def create_bertopic_model(self):
+    def create_bertopic_model(self, min_samples=10):
 
         self.bertopic_model = BERTopic(
             embedding_model=embedding_model,
@@ -150,7 +147,7 @@ class BertopicMaker:
             # HDBSCAN: 밀도 기반 클러스터링
             hdbscan_model=HDBSCAN(
                 min_cluster_size=self.min_cluster,
-                min_samples=10,
+                min_samples=min_samples,
                 metric='euclidean',
                 cluster_selection_method='leaf',
                 prediction_data=True
@@ -188,34 +185,41 @@ class BertopicMaker:
         df_result = self.data[['imdb_id', 'title', 'combined_text']].copy()
         df_result['topic'] = new_topics
         self.result_data = df_result
-        self.topic_info = self.bertopic_model.get_topic_info()
 
-    def save_results(self):
+    def save_results(self, save_point):
         # 결과 파일 저장
-        self.result_data.to_parquet(f"{self.output_dir}/{self.type_name}_topics.parquet", index=False)
-        print(f"  ✓ {self.output_dir}/{self.type_name}_topics.parquet")
+
+        # 데이터 경로 지정
+        load_dotenv()
+        output_dir = f"{os.getenv("OUTPUT_DIR")}"
+
+        os.makedirs(output_dir, exist_ok=True)
+        save_dir = f"{output_dir}/{save_point}"
+
+        self.result_data.to_parquet(f"{save_dir}/{save_point}_topics.parquet", index=False)
+        print(f"  ✓ {save_dir}/{save_point}_topics.parquet")
 
         # 토픽 정보 파일 저장
         topic_info = self.bertopic_model.get_topic_info()
-        topic_info.to_parquet(f"{self.output_dir}/topic_info.parquet", index=False)
-        print(f"  ✓ {self.output_dir}/{self.type_name}_topic_info.csv")
+        topic_info.to_parquet(f"{save_dir}/{save_point}_topic_info.parquet", index=False)
+        print(f"  ✓ {save_dir}/{save_point}_topic_info.csv")
 
         # 모델 파일 저장
         try:
             self.bertopic_model.save(
-                f"{self.output_dir}/{self.type_name}_bertopic_model",
+                f"{save_dir}/{save_point}_bertopic_model",
                 serialization="safetensors",
                 save_ctfidf=True,
                 save_embedding_model=False  # 용량 절약
             )
-            print(f"  ✓ {self.output_dir}/bertopic_model/")
+            print(f"  ✓ {save_dir}/bertopic_model/")
 
         except Exception as e:
             print(f"  ✗ 모델 저장 실패: {e}")
 
-        self._save_visualizations()
+        self._save_visualizations(save_dir)
 
-    def _save_visualizations(self):
+    def _save_visualizations(self, output_dir):
         """모든 시각화를 HTML로 저장"""
 
         visualizations = {
@@ -250,7 +254,7 @@ class BertopicMaker:
         for viz_type, viz_info in visualizations.items():
             try:
                 fig = viz_info['func']()
-                filepath = f"{self.output_dir}/topics_{viz_type}.html"
+                filepath = f"{output_dir}/topics_{viz_type}.html"
                 fig.write_html(filepath)
                 print(f"  ✓ {filepath}")
             except Exception as e:
