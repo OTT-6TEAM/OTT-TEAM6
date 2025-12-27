@@ -3,8 +3,10 @@ import pandas as pd
 
 # 리뷰 감성점수의 가중평균 계산기.
 ## 사용파일 : review_score.parquet
-## 작품 ID로 그룹하여 apply로 적용하면 됨.
-def calculate_sentiment_score(group):
+def calculate_sentiment_score(data):
+    return data.groupby('imdb_id').apply(calculate_sentiment_score_group).reset_index().rename(columns={0:'sentiment_score'})
+
+def calculate_sentiment_score_group(group):
     """
     각 그룹(imdb_id)에 대해 가중 평균을 계산하는 함수
     """
@@ -22,7 +24,6 @@ def calculate_sentiment_score(group):
 
 # 평점
 ## 사용파일 : 00_main
-
 ### 스케일러
 def scaler(column, min_val, max_val):
     return ((column - min_val) / (max_val - min_val)).clip(0, 1)
