@@ -45,7 +45,7 @@ class ReviewPreprocessor:
     # ============================================
 
     @staticmethod
-    def _mask_blank(df, col):
+    def _create_blank_mask(df, col):
         """공백만 있는 리뷰"""
         return df[col].str.strip().eq("")
 
@@ -105,7 +105,7 @@ class ReviewPreprocessor:
         """모든 노이즈 마스크 조합"""
         col = self.text_column
 
-        m1 = self._mask_blank(df, col)
+        m1 = self._create_blank_mask(df, col)
         m2 = self._mask_no_alnum(df, col)
         m3 = self._mask_numeric_only(df, col)
         m4 = self._mask_repeated_char(df, col)

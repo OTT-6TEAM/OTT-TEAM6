@@ -210,7 +210,7 @@ async def fetch_reviews_for_title(
 # ==========================
 
 
-async def crawl_imdb_reviews(
+async def collect_imdb_reviews(
     input_csv_path: str,
     output_csv_path: str,
     max_titles: int | None = None,

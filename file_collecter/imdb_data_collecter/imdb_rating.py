@@ -167,7 +167,7 @@ def filter_by_date_range(df, start_date='2005-01-01', end_date='2015-12-31'):
 # ==========================================================
 # 메인 실행
 # ==========================================================
-async def crawl_imdb_rating(input_csv_path, output_csv_path, vote_threshold=30):
+async def collect_imdb_ratings(input_csv_path, output_csv_path, vote_threshold=30):
     print("=" * 90)
     print("🚀 IMDB RATING COLLECTOR (2005-2015)")
     print("=" * 90)

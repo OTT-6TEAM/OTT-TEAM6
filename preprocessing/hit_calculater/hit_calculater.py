@@ -3,7 +3,7 @@ import pandas as pd
 
 # 리뷰 감성점수의 가중평균 계산기.
 ## 사용파일 : review_score.parquet
-def calculate_sentiment_score(data):
+def compute_weighted_sentiment_score(data):
     return data.groupby('imdb_id').apply(calculate_sentiment_score_group).reset_index().rename(columns={0:'sentiment_score'})
 
 def calculate_sentiment_score_group(group):

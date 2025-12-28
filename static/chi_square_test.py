@@ -96,7 +96,7 @@ def chi_square_test(df, x_column, y_column, alpha=0.05):
         'expected': expected
     }
 
-def heatmap_maker(data, x_columns, y_columns, size=[18, 6]):
+def create_heatmap(data, x_columns, y_columns, size=[18, 6]):
     cross_df = pd.crosstab(data[x_columns], data[y_columns])
 
     cross_r_df = cross_df.copy()
@@ -108,7 +108,7 @@ def heatmap_maker(data, x_columns, y_columns, size=[18, 6]):
     sns.heatmap(cross_r_df.transpose(), cmap="YlGnBu")
     plt.show()
 
-def crosstab_maker(data, x_columns, y_columns):
+def create_crosstab(data, x_columns, y_columns):
     cross_df = pd.crosstab(data[x_columns], data[y_columns])
 
     cross_r_df = cross_df.copy()
