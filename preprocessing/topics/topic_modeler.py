@@ -207,6 +207,7 @@ class TopicModeler:
 
         os.makedirs(output_dir, exist_ok=True)
         save_dir = f"{output_dir}/{save_point}"
+        os.makedirs(save_dir, exist_ok=True)
 
         self.result_data.to_parquet(f"{save_dir}/{save_point}_topics.parquet", index=False)
         print(f"  ✓ {save_dir}/{save_point}_topics.parquet")
