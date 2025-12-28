@@ -1,6 +1,6 @@
 from .config import *
 
-class BertVectorizer():
+class BERTVectorizer():
     def __init__(
             self,
             type

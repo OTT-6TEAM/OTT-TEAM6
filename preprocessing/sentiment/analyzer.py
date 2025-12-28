@@ -19,7 +19,7 @@ from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 
-class BERTSentimentAnalyzer:
+class SentimentAnalyzer:
     """
     BERT 기반 감성분석 클래스
 

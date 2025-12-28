@@ -1,6 +1,6 @@
 from .utils import *
 
-class Preprocessing:
+class DataPreprocessor:
     def __init__(
             self,
             type

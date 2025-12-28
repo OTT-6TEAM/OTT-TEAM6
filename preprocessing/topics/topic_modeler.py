@@ -1,6 +1,6 @@
 from .config import *
 
-class BertopicMaker:
+class TopicModeler:
     def __init__(
             self,
             data,
