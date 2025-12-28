@@ -83,3 +83,4 @@ def get_genre_mapping(media_type='tv'):
     except json.JSONDecodeError:
         print("응답을 JSON으로 디코딩하는 데 실패했습니다.")
         return pd.DataFrame()
+

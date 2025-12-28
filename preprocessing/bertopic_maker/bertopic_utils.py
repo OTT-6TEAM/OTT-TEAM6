@@ -1,6 +1,6 @@
 from .set_up import *
 
-def cluster_topics(topic_model):
+def cluster_topics(topic_model, n_groups):
     """
     토픽 간 거리를 계산하고 유사한 토픽끼리 그룹화
 
@@ -37,8 +37,6 @@ def cluster_topics(topic_model):
 
     # outlier(-1)는 인덱스 0에 있으므로, 실제 토픽은 인덱스 1부터
     valid_embeddings = topic_embeddings[1:len(valid_topics) + 1]
-
-    n_groups = suggest_n_clusters(len(topic_info))
 
     # 계층적 클러스터링
     clustering = AgglomerativeClustering(

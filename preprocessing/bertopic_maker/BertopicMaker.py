@@ -109,6 +109,18 @@ class BertopicMaker:
             ]
             stopwords = list(set(base_stopwords + additional_movie_stopwords))
 
+        elif type_name == 'review':
+            additional_review_stopwords = [
+                "like","just","good","really","time","way","watch","watched","watching","people",
+                "dont","didnt","doesnt","isnt","wasnt","werent","cant","couldnt","wouldnt",
+                "im","ive","youre","theyre","thats","theres","hes","shes","weve","id",
+                # 형식/대상 단어(드라마 쪽 강화)
+                "film","films","movie","movies","show","shows","series","season","seasons","episode","episodes",
+                "drama","dramas","tv","television",
+                "story","plot","character","characters"
+            ]
+            stopwords = list(set(base_stopwords + additional_review_stopwords))
+
         else:
             stopwords = base_stopwords
 

@@ -1,6 +1,6 @@
 from .set_up import *
 
-class OverViewVectorizer():
+class OverviewTfidfVectorizer():
     def __init__(
             self,
             max_features=5000,
