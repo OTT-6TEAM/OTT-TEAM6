@@ -144,7 +144,7 @@ def load_checkpoint(output_csv_path):
 # ==========================================================
 # 날짜 필터링
 # ==========================================================
-def filter_by_date_range(df, start_date='2005-01-01', end_date='2015-12-31'):
+def filter_by_date_range(df, start_date='2005-01-01', end_date='2025-12-31'):
     """
     first_air_date 컬럼 기준으로 날짜 필터링
     """
@@ -180,7 +180,7 @@ async def collect_imdb_ratings(input_csv_path, output_csv_path, vote_threshold=3
     df = pd.read_csv(input_csv_path)
 
     # 날짜 필터링 (2005-2015)
-    df = filter_by_date_range(df, '2005-01-01', '2015-12-31')
+    df = filter_by_date_range(df, '2005-01-01', '2025-12-31')
 
     # vote_count 필터링
     df_filtered = df[(df['vote_count'] >= vote_threshold) & (df['imdb_id'].notna())]

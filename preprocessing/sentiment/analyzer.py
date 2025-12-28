@@ -34,7 +34,13 @@ class SentimentAnalyzer:
         self.chunk_size = 100_000
         self.batch_size = 48
         self.max_length = 512
-        self.device = ("cuda" if torch.cuda.is_available() else "cpu")
+
+        if torch.cuda.is_available():
+            self.device = 'cuda'
+        elif torch.backends.mps.is_available():
+            self.device = 'mps'
+        else:
+            self.device = 'cpu'
 
         # 모델 & 토크나이저
         self.tokenizer = None
@@ -139,7 +145,6 @@ class SentimentAnalyzer:
         result_df = pd.DataFrame({
             "review_id": df_chunk["review_id"].values,
             "imdb_id": df_chunk["imdb_id"].values,
-            "content_type": df_chunk["content_type"].values,
             "sentiment_label": all_labels,
             "sentiment_score": pd.Series(all_scores, dtype="float32"),
         })
@@ -216,7 +221,7 @@ class SentimentAnalyzer:
                 # 성능 로그
                 rps = n_rows / elapsed if elapsed > 0 else 0
                 self._log(
-                    f"CHUNK {chunk_idx:05d} - DONE ✅ "
+                    f"CHUNK {chunk_idx:05d} - DONE"
                     f"({elapsed/60:.2f} min, {rps:.1f} rows/sec) -> {output_path}"
                 )
 
@@ -224,7 +229,7 @@ class SentimentAnalyzer:
                 if self.device == "cuda":
                     torch.cuda.empty_cache()
 
-            self._log("=== SENTIMENT ANALYSIS COMPLETED ✅ ===")
+            self._log("=== SENTIMENT ANALYSIS COMPLETED ===")
             print("\n✅ All chunks processed successfully!")
 
         except RuntimeError as e:

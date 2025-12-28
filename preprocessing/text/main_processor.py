@@ -26,14 +26,14 @@ class DataPreprocessor:
         data = data[data['vote_count'] >= 30].copy()
 
         data = data.rename(
-            columns={'vote_average': 'tmdb_rating', 'vote_count': 'tmdb_num_votes'}
+            columns={'vote_average': 'tmdb_rating', 'vote_count': 'tmdb_rating_count'}
         ).copy()
 
         data = data.dropna(
             subset=[
                 'imdb_id', 'genres', 'overview',
-                'poster_path', 'tmdb_rating', 'tmdb_num_votes',
-                'imdb_rating', 'imdb_num_votes'
+                'poster_path', 'tmdb_rating', 'tmdb_rating_count',
+                'imdb_rating', 'imdb_rating_count'
             ]
         )
 
@@ -70,15 +70,15 @@ class DataPreprocessor:
             main_data = data[[
                 'id', 'imdb_id', 'title', 'original_language',
                 'overview', 'release_date', 'runtime', 'genres',
-                'keywords', 'poster_path', 'tmdb_rating', 'tmdb_num_votes',
-                'imdb_rating', 'imdb_num_votes'
+                'keywords', 'poster_path', 'tmdb_rating', 'tmdb_rating_count',
+                'imdb_rating', 'imdb_rating_count'
             ]].copy()
             main_data = self._filter_top_10(main_data, 'original_language', 'xx')
         else:
             main_data = data[[
-                'id', 'series_id', 'imdb_id', 'title', 'original_language',
+                'id', 'imdb_id', 'title', 'original_language',
                 'overview', 'first_air_date', 'episode_run_time_average', 'genres',
-                'keyword', 'poster_path', 'tmdb_rating', 'tmdb_num_votes',
+                'keyword', 'poster_path', 'tmdb_rating', 'tmdb_rating_count',
                 'imdb_rating', 'imdb_rating_count'
             ]].copy()
             main_data = self._filter_top_10(main_data, 'original_language', 'xx')
@@ -127,7 +127,8 @@ class DataPreprocessor:
         countries_data = self._filter_top_10(countries_data, country_col, 'other')
         countries_data = countries_data.drop_duplicates()
 
-        genre_ids['genre_id'] = genre_ids['genre_id'].astype('int')
+        genre_ids['genre_ids'] = genre_ids['genre_ids'].astype('int')
+        genre_ids.rename(columns={'genre_ids': 'genre_id'}, inplace=True)
 
         genres_df = get_genre_mapping(self.type)
 

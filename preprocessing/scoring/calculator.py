@@ -30,8 +30,8 @@ def scaler(column, min_val, max_val):
 
 ### 계산기
 def calculate_ratings(data):
-    num_votes=data['imdb_num_votes'] + data['tmdb_num_votes']
-    rating=((data['tmdb_rating'] * data['tmdb_num_votes']) + (data['imdb_rating'] * data['imdb_num_votes'])) / num_votes
+    num_votes=data['imdb_rating_count'] + data['tmdb_rating_count']
+    rating=((data['tmdb_rating'] * data['tmdb_rating_count']) + (data['imdb_rating'] * data['imdb_rating_count'])) / num_votes
 
     # 고정값 스케일러로 스케일링
     ## 최소, 최대값은 전체 범위보다 20% 더 넓은 범위로 설정

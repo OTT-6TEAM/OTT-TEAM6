@@ -224,30 +224,20 @@ class ReviewPreprocessor:
         """
         df = df.copy()
 
-        help_cols = ['helpful_up_votes', 'helpful_down_votes',
-                     'helpful_total', 'helpful_ratio']
+        help_cols = ['helpful_up_votes', 'helpful_down_votes']
 
         # 숫자형으로 변환
         for col in help_cols:
             if col in df.columns:
                 df[col] = pd.to_numeric(df[col], errors='coerce')
 
-        # helpful_ratio 재계산 (안전하게)
-        if 'helpful_total' in df.columns and 'helpful_up_votes' in df.columns:
-            # total이 0이면 ratio도 0
-            df['helpful_ratio'] = np.where(
-                df['helpful_total'] > 0,
-                df['helpful_up_votes'] / df['helpful_total'],
-                0
-            )
-            df['helpful_ratio'] = df['helpful_ratio'].astype('float32')
+        df['helpful_total'] = df['helpful_up_votes'] + df['helpful_down_votes']
 
-        # 결측치를 0으로 채우기
-        for col in help_cols:
-            if col in df.columns:
-                n_missing = df[col].isna().sum()
-                if n_missing > 0:
-                    df[col] = df[col].fillna(0)
+        df['helpful_ratio'] = np.where(
+            df['helpful_total'] > 0,
+            df['helpful_up_votes'] / df['helpful_total'],
+            0
+        )
 
         return df
 
