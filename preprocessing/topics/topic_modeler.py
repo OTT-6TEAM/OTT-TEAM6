@@ -203,7 +203,7 @@ class TopicModeler:
 
         # 데이터 경로 지정
         load_dotenv()
-        output_dir = f"{os.getenv("OUTPUT_DIR")}"
+        output_dir = f"{os.getenv("BERT_OUTPUT_DIR")}"
 
         os.makedirs(output_dir, exist_ok=True)
         save_dir = f"{output_dir}/{save_point}"

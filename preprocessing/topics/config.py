@@ -14,7 +14,7 @@ warnings.filterwarnings('ignore')
 os.environ['MallocStackLogging'] = '0'
 
 load_dotenv()
-OUTPUT_DIR = os.getenv("OUTPUT_DIR")
+OUTPUT_DIR = os.getenv("BERT_OUTPUT_DIR")
 DRAMA_FILE_PATH = os.getenv("DRAMA_FILE_PATH")
 MOVIE_FILE_PATH = os.getenv("MOVIE_FILE_PATH")
 HIT_FILE_PATH = os.getenv("HIT_FILE_PATH")

@@ -159,7 +159,7 @@ def create_drama_umap_map(df_topics, df_embeddings, topic_clusters, label=""):
 
     print(f"  - 유효 드라마 수: {len(df_valid)}")
 
-    # ✅ UMAP 새로 학습 (작품 단위)
+    #UMAP 새로 학습 (작품 단위)
     n_neighbors = min(15, len(embeddings) - 1)
     umap_model = UMAP(
         n_neighbors=n_neighbors,
